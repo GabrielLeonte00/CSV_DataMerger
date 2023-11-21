@@ -32,7 +32,7 @@ public class functions {
 
 		Path path = Paths.get(input.nextLine());
 		String aux = path.toString();
-		String file_type = aux.substring(aux.length() - 3); // get the last 3 characters which
+		String file_type = aux.substring(aux.length() - 3); // get the last 3 characters
 		while (Files.notExists(path) || !file_type.equals("csv")) { // check if the file exist or if it's a CSV file
 			System.out.println("Incorrect path/type, insert the path to the csv file:");
 			// retry until a valid path to an existing CSV is inserted
@@ -43,7 +43,7 @@ public class functions {
 
 		csv_File = new File(path.toString()); // import a valid CSV file
 
-		return csv_File;// return theCSV file
+		return csv_File;// return the CSV file
 	}
 
 	/**
