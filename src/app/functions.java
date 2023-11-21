@@ -73,7 +73,7 @@ public class functions {
 	 * 
 	 * @param list   The data list of a CSV file
 	 * @param column The column which we want to omit
-	 * @return The index of our common column
+	 * @return The index of the common column
 	 */
 	public static int findIndexOfColumn(String[] list, String column) {
 		for (int i = 0; i < list.length; i++) {
@@ -119,25 +119,28 @@ public class functions {
 	/**
 	 * The function organizeData extracts the common data from the 2 CSV files and
 	 * the different data: the data which exist in the first CSV file but not in the
-	 * second and the data which exist in the second CSV file but not in the first
-	 * one
+	 * second one and the data which exist in the second CSV file but not in the
+	 * first one. Also gives the option to avoid or not duplicate data, which means
+	 * that in a CSV file there are rows of data which have the common columns the
+	 * same but the other columns are different
 	 * 
-	 * @param data1          The data from the first CSV file
-	 * @param data2          The data from the second CSV file
-	 * @param mergedData     The merged data from both CSV file, omitting the common
+	 * @param data1          Data from the first CSV file
+	 * @param data2          Data from the second CSV file
+	 * @param mergedData     Merged data from both CSV file, omitting the common
 	 *                       data
 	 * @param common_columns The header of columns for the mergedData
-	 * @param indexes1       The indexes of the common columns in the first CSV file
-	 * @param indexes2       The indexes of the common columns in the second CSV
+	 * @param indexes1       Indexes of the common columns in the first CSV file
+	 * @param indexes2       Indexes of the common columns in the second CSV file
+	 * @param diffData1      Copy of data1 used for differences in the first CSV
 	 *                       file
-	 * @param diffData1      The copy of data1 used for differences in the first CSV
+	 * @param diffData2      Copy of data2 used for differences in the second CSV
 	 *                       file
-	 * @param diffData2      The copy of data2 used for differences in the second
-	 *                       CSV file
+	 * @param duplicates     This variable will decide if duplicates will be treated
+	 *                       or not;
 	 */
 	static void organizeData(List<String[]> data1, List<String[]> data2, List<String[]> mergedData,
 			List<String> common_columns, int[] indexes1, int[] indexes2, List<String[]> diffData1,
-			List<String[]> diffData2) {
+			List<String[]> diffData2, int duplicates) {
 		for (int i = 0; i < data1.size(); i++) {
 			for (int j = 0; j < data2.size(); j++) {
 				int OK = 1;
@@ -148,10 +151,22 @@ public class functions {
 						OK = 0;
 						break;
 					}
+
+					// check if valid data was found
+					// check if duplicates should be treated
+					if (OK == 1 && duplicates == 1) {
+						// create the String array for the merged data for the common CSV file
+						String[] mergedColumnsData = functions.mergedObject(data1.get(i), data2.get(j), indexes2);
+						mergedData.add(mergedColumnsData); // add data in the mergedData
+						diffData1.remove(data1.get(i)); // remove data from the copy of data1
+						diffData2.remove(data2.get(j)); // remove data from the copy of data2
+						break;
+					}
+
 				}
-				// checks if valid data was found, OK = 1 meaning that all common columns
-				// contains the same data
-				if (OK == 1) {
+				// check if valid data was found
+				// check if duplicates should not be treated
+				if (OK == 1 && duplicates == 0) {
 					// create the String array for the merged data for the common CSV file
 					String[] mergedColumnsData = functions.mergedObject(data1.get(i), data2.get(j), indexes2);
 					mergedData.add(mergedColumnsData); // add data in the mergedData
@@ -167,7 +182,8 @@ public class functions {
 	 * The function createStringLine merges a String array into a simple String
 	 * 
 	 * @param row An array of strings with data on a row from each column
-	 * @return A String with all data merged and with ',' in between them
+	 * @return A string with all data merged and with the separator ',' in between
+	 *         them
 	 */
 	static String createStringLine(String[] row) {
 
